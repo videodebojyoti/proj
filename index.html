@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday, Ruppsuu!</title>
+    <!-- Google Fonts: Inter -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React and ReactDOM CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel Standalone for in-browser JSX transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        margin: 0;
+        overflow-x: hidden; /* Prevent horizontal scroll due to confetti */
+      }
+      /* Basic fade-in animation for view transitions */
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Confetti/Hearts animation */
+      @keyframes heart-float {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(-105vh) rotate(720deg);
+          opacity: 0;
+        }
+      }
+      /* Heart Pulse Animation for Side Hearts */
+      @keyframes heart-pulse {
+        0% {
+          transform: scale(1);
+          filter: drop-shadow(0 0 0px #f472b6);
+        }
+        30% {
+          transform: scale(1.18);
+          filter: drop-shadow(0 0 16px #f472b6) drop-shadow(0 0 32px #fbcfe8);
+        }
+        50% {
+          transform: scale(0.92);
+          filter: drop-shadow(0 0 8px #f472b6);
+        }
+        70% {
+          transform: scale(1.12);
+          filter: drop-shadow(0 0 20px #f472b6) drop-shadow(0 0 32px #fbcfe8);
+        }
+        100% {
+          transform: scale(1);
+          filter: drop-shadow(0 0 0px #f472b6);
+        }
+      }
+      .side-heart-pulse {
+        animation: heart-pulse 1.4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform, filter;
+      }
+      .animate-heart-fall {
+        animation: heart-fall 2s ease-out forwards;
+        --random-x: var(
+          --tw-random-x,
+          0.5
+        ); /* Custom property for random horizontal movement */
+      }
+      @keyframes heart-fall {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(
+              calc((var(--random-x, 0.5) - 0.5) * 200px),
+              -500px
+            )
+            scale(0.5);
+          opacity: 0;
+        }
+      }
+
+      /* Gift Box styles */
+      .gift-box {
+        width: 200px;
+        height: 150px;
+        background-color: #f87171; /* Red */
+        border-radius: 15px;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+      .gift-box:hover {
+        transform: translateY(-10px);
+      }
+      .gift-box-lid {
+        width: 220px;
+        height: 50px;
+        background-color: #ef4444; /* Darker Red */
+        border-radius: 15px;
+        position: absolute;
+        top: -25px;
+        left: -10px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease-in-out;
+      }
+      .gift-box:hover .gift-box-lid {
+        transform: translateY(-30px);
+      }
+      .gift-box-ribbon-v {
+        width: 30px;
+        height: 100%;
+        background-color: #fecaca; /* Light Pink */
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 5px;
+      }
+      .gift-box-ribbon-h {
+        width: 100%;
+        height: 30px;
+        background-color: #fecaca; /* Light Pink */
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        border-radius: 5px;
+      }
+      .gift-box-bow {
+        width: 60px;
+        height: 60px;
+        background-color: #fecaca; /* Light Pink */
+        border-radius: 50%;
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+      .gift-box-bow::before,
+      .gift-box-bow::after {
+        content: "";
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background-color: #fecaca;
+        border-radius: 50%;
+        top: 10px;
+      }
+      .gift-box-bow::before {
+        left: -10px;
+        transform: rotate(45deg);
+      }
+      .gift-box-bow::after {
+        right: -10px;
+        transform: rotate(-45deg);
+      }
+
+      /* Scratch Card styles */
+      .scratch-card-container {
+        position: relative;
+        width: 250px;
+        height: 250px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        margin: 1rem;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+      }
+      .scratch-card-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        color: #333;
+      }
+      .scratch-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: grab;
+        touch-action: none; /* Prevent scrolling on touch devices */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      // All React component code goes here
+
+      // Confetti/Hearts Animation Component
+      const ConfettiHearts = () => {
+        const [hearts, setHearts] = React.useState([]);
+
+        React.useEffect(() => {
+          const interval = setInterval(() => {
+            const newHeart = {
+              id: Math.random(),
+              left: Math.random() * 100 + "vw",
+              animationDuration: Math.random() * 2 + 3 + "s", // 3 to 5 seconds
+              delay: Math.random() * 0.5 + "s",
+              size: Math.random() * 20 + 20 + "px", // 20 to 40px
+              color: ["#EF4444", "#EC4899", "#F87171", "#FDA4AF", "#FBCFE8"][
+                Math.floor(Math.random() * 5)
+              ], // Red/Pink shades
+            };
+            setHearts((prevHearts) => [...prevHearts, newHeart]);
+
+            // Clean up old hearts to prevent memory issues
+            setTimeout(() => {
+              setHearts((prevHearts) =>
+                prevHearts.filter((heart) => heart.id !== newHeart.id)
+              );
+            }, parseFloat(newHeart.animationDuration) * 1000);
+          }, 300); // Add a new heart every 300ms
+
+          return () => clearInterval(interval);
+        }, []);
+
+        return (
+          <div className="fixed inset-0 pointer-events-none overflow-hidden z-40">
+            {hearts.map((heart) => (
+              <div
+                key={heart.id}
+                className="absolute text-red-500"
+                style={{
+                  left: heart.left,
+                  top: "100%",
+                  fontSize: heart.size,
+                  color: heart.color,
+                  animation: `heart-float ${heart.animationDuration} ease-out forwards`,
+                  animationDelay: heart.delay,
+                  opacity: 0.8,
+                  transform: `translateX(calc((var(--random-x, 0.5) - 0.5) * 100px))`, // Small horizontal drift
+                }}
+              >
+                ❤️
+              </div>
+            ))}
+          </div>
+        );
+      };
+
+      // Menu Item Component
+      const MenuItem = ({ title, icon, onClick }) => (
+        <button
+          onClick={onClick}
+          className="flex flex-col items-center justify-center p-6 bg-blue-200 rounded-2xl shadow-md hover:bg-blue-300 transition duration-300 transform hover:scale-105 cursor-pointer"
+        >
+          <span className="text-5xl mb-3">{icon}</span>
+          <span className="text-xl font-semibold text-blue-800">{title}</span>
+        </button>
+      );
+
+      // Memory Jar Component
+      const MemoryJar = ({ navigateTo }) => {
+        const memories = [
+          {
+            caption: "I LOOOVEEEE YOOOUUUU BAAAAABBUUUUUYYYYYYYY",
+            image: "memory/p1.jpg",
+          },
+          {
+            caption: "Our dates to Esplanade",
+            image: "memory/p2.jpg",
+          },
+          {
+            caption: "Time spent in different classrooms",
+            image: "memory/p3.jpg",
+          },
+          {
+            caption: "Sexy Rupsuu with MOTA Boyfriend",
+            image: "memory/p4.jpg",
+          },
+          {
+            caption: "Sneha ta khub jalai kintu",
+            image: "memory/p5.jpg",
+          },
+          {
+            caption:
+              "Amader biyer por amra Puri te Jbo Jagannath er asirbadh nite",
+            image: "memory/p6.jpg",
+          },
+          {
+            caption: "You very sexyyyy",
+            image: "memory/p7.jpg",
+          },
+          {
+            caption: "I Promise to always be with you",
+            image: "memory/p9.jpg",
+          },
+          {
+            caption: "Happy 21st Birthday Rupsuuu",
+            image: "memory/p10.jpg",
+          },
+        ];
+        const [revealedMemory, setRevealedMemory] = React.useState(null);
+        const [showModal, setShowModal] = React.useState(false);
+
+        const openMemory = (memory) => {
+          setRevealedMemory(memory);
+          setShowModal(true);
+        };
+
+        const closeModal = () => {
+          setShowModal(false);
+          setRevealedMemory(null);
+        };
+
+        return (
+          <section className="bg-white p-8 rounded-3xl shadow-xl max-w-4xl w-full text-center animate-fade-in">
+            <h2 className="text-3xl md:text-4xl font-bold text-pink-600 mb-8">
+              Our Sweet Chats
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {memories.map((memory, index) => (
+                <button
+                  key={index}
+                  onClick={() => openMemory(memory)}
+                  className="bg-pink-100 p-4 rounded-xl shadow-sm hover:bg-pink-200 transition duration-200 transform hover:scale-105 text-pink-800 font-medium text-lg flex flex-col items-center justify-center h-64"
+                >
+                  <img
+                    src={memory.image}
+                    alt={`Memory ${index + 1}`}
+                    className="w-full h-40 object-cover rounded-lg mb-3"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://placehold.co/300x200/FFC0CB/000000?text=Image+Not+Found";
+                    }}
+                  />
+                  <span className="block text-base font-semibold mt-2">
+                    {memory.caption}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {showModal && revealedMemory && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-lg w-full text-center relative">
+                  <h3 className="text-2xl font-bold text-blue-600 mb-4">
+                    A Special Memory!
+                  </h3>
+                  <div className="flex justify-center items-center w-full mb-4">
+                    <img
+                      src={revealedMemory.image}
+                      alt="Memory"
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "60vh",
+                        height: "auto",
+                        width: "auto",
+                        display: "block",
+                        margin: "0 auto",
+                        borderRadius: "0.75rem",
+                        background: "#fbcfe8",
+                      }}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src =
+                          "https://placehold.co/400x300/FFC0CB/000000?text=Image+Not+Found";
+                      }}
+                    />
+                  </div>
+                  <p className="text-lg text-gray-700 mb-6">
+                    {revealedMemory.caption}
+                  </p>
+                  <button
+                    onClick={closeModal}
+                    className="px-6 py-2 bg-red-500 text-white font-bold rounded-full shadow-lg hover:bg-red-600 transition duration-300"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => navigateTo("mainMenu")}
+              className="mt-8 px-6 py-2 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+            >
+              Back to Menu
+            </button>
+          </section>
+        );
+      };
+
+      // Quiz Component
+      const Quiz = ({ navigateTo }) => {
+        const questions = [
+          {
+            question: "Our First short date was in:",
+            options: [
+              "Mio Amore",
+              "Dadur Dokan",
+              "Momo Shop near College",
+              "Burger King",
+            ],
+            answer: "Momo Shop near College",
+            feedbackCorrect:
+              "You got it! So many sweet memories from that first date!",
+            feedbackIncorrect:
+              "Close! But maybe we need to have more dates to practice! 😉",
+          },
+          {
+            question: "Our special date is:",
+            options: ["01/01/23", "09/05/23", "14/02/24", "25/12/22"],
+            answer: "09/05/23",
+            feedbackCorrect: "Absolutely! That's a day etched in my heart.",
+            feedbackIncorrect: "Hmm, let's revisit our calendar of love! ❤️",
+          },
+          {
+            question: "Our favourite food:",
+            options: ["Pizza", "Biriyani", "Fried Rice", "Momos"],
+            answer: "Biriyani",
+            feedbackCorrect: "Yes! Nothing beats a good Biriyani with you.",
+            feedbackIncorrect:
+              "Almost! But our love for Biriyani is undeniable!",
+          },
+          {
+            question: "Our favourite Sweet:",
+            options: ["Rosh Malai", "Choco Volcona", "ChomChom", "Pastery"],
+            answer: "Choco Volcona",
+            feedbackCorrect: "Yes! Nothing beats a Choco Volcona with you.",
+            feedbackIncorrect:
+              "Almost! But our love for Choco Volcona is undeniable!",
+          },
+          {
+            question: "Who loves you the most:",
+            options: ["Sneha", "Yourself", "Someone else", "Debojyoti"],
+            answer: "Debojyoti",
+            feedbackCorrect: "Yess..! Debojyoti loves you aloott ..!",
+            feedbackIncorrect: "Yess..! Debojyoti loves you aloott ..!",
+            alwaysCorrect: true,
+          },
+          {
+            question: "Our favourite date location:",
+            options: ["Beach", "Mountains", "Esplanade", "Cinema"],
+            answer: "Esplanade",
+            feedbackCorrect: "Perfect! So many beautiful moments there.",
+            feedbackIncorrect:
+              "Not quite! But every place is special with you.",
+          },
+        ];
+
+        const [currentQuestionIndex, setCurrentQuestionIndex] =
+          React.useState(0);
+        const [score, setScore] = React.useState(0);
+        const [showFeedback, setShowFeedback] = React.useState(false);
+        const [lastAnswerCorrect, setLastAnswerCorrect] = React.useState(false);
+        const [quizFinished, setQuizFinished] = React.useState(false);
+
+        const handleAnswer = (selectedOption) => {
+          const currentQ = questions[currentQuestionIndex];
+          let isCorrect = selectedOption === currentQ.answer;
+          // For the special question, always treat as correct
+          if (currentQ.alwaysCorrect) {
+            isCorrect = true;
+          }
+          setLastAnswerCorrect(isCorrect);
+          setShowFeedback(true);
+          if (isCorrect) {
+            setScore(score + 1);
+          }
+          setTimeout(() => {
+            setShowFeedback(false);
+            if (currentQuestionIndex < questions.length - 1) {
+              setCurrentQuestionIndex(currentQuestionIndex + 1);
+            } else {
+              setQuizFinished(true);
+            }
+          }, 1500); // Show feedback for 1.5 seconds
+        };
+
+        const resetQuiz = () => {
+          setCurrentQuestionIndex(0);
+          setScore(0);
+          setQuizFinished(false);
+          setShowFeedback(false);
+          setLastAnswerCorrect(false);
+        };
+
+        const currentQuestion = questions[currentQuestionIndex];
+
+        return (
+          <section className="bg-white p-8 rounded-3xl shadow-xl max-w-3xl w-full text-center animate-fade-in">
+            <h2 className="text-3xl md:text-4xl font-bold text-blue-600 mb-8">
+              How Well Do You Know Us?
+            </h2>
+
+            {!quizFinished ? (
+              <div className="flex flex-col items-center">
+                <p className="text-xl text-gray-700 mb-6 font-semibold">
+                  {currentQuestionIndex + 1}. {currentQuestion.question}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
+                  {currentQuestion.forceDebojyoti
+                    ? currentQuestion.options.map((option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleAnswer(option)}
+                          className="px-6 py-3 bg-blue-100 text-blue-800 rounded-full shadow-md hover:bg-blue-200 transition duration-200 transform hover:scale-105 font-medium"
+                          disabled={showFeedback}
+                        >
+                          Debojyoti
+                        </button>
+                      ))
+                    : currentQuestion.options.map((option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleAnswer(option)}
+                          className="px-6 py-3 bg-blue-100 text-blue-800 rounded-full shadow-md hover:bg-blue-200 transition duration-200 transform hover:scale-105 font-medium"
+                          disabled={showFeedback}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                </div>
+                {showFeedback && (
+                  <p
+                    className={`mt-6 text-lg font-bold ${
+                      lastAnswerCorrect ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
+                    {lastAnswerCorrect
+                      ? currentQuestion.feedbackCorrect
+                      : currentQuestion.feedbackIncorrect}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center">
+                <img
+                  src="big-pic.jpg"
+                  alt="Collage of our memories"
+                  className="w-full max-w-md rounded-2xl shadow-lg mb-6 object-contain"
+                  style={{ background: "#fbcfe8" }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://placehold.co/400x300/FFC0CB/000000?text=Image+Not+Found";
+                  }}
+                />
+                <h3 className="text-2xl md:text-3xl font-bold text-pink-600 mb-4">
+                  I don't need tests to know your love for me...
+                  <br />
+                  <span className="block mt-2">
+                    I LOOVEE YOOUUU ALWAAAYYYYSSSS
+                  </span>
+                </h3>
+                <button
+                  onClick={resetQuiz}
+                  className="px-6 py-3 bg-red-500 text-white font-bold rounded-full shadow-lg hover:bg-red-600 transition duration-300 transform hover:scale-105 mb-2"
+                >
+                  Play Again
+                </button>
+                <button
+                  onClick={() => navigateTo("mainMenu")}
+                  className="px-6 py-3 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+                >
+                  Back to Menu
+                </button>
+              </div>
+            )}
+            {!quizFinished && (
+              <button
+                onClick={() => navigateTo("mainMenu")}
+                className="mt-8 px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition duration-300"
+              >
+                Back to Menu
+              </button>
+            )}
+          </section>
+        );
+      };
+
+      // Scratch Card Game Component
+      const ScratchCardGame = ({ navigateTo }) => {
+        const cardsData = [
+          {
+            id: 1,
+            caption: "I LOVE YOU THE MOST ❤️",
+            image: "images/p1.jpg", // Placeholder for p1.jpg
+          },
+          {
+            id: 2,
+            caption: "You are my comfort place",
+            image: "images/p2.jpg", // Placeholder for p2.jpg
+          },
+          {
+            id: 3,
+            caption: "I'm the happiest with you",
+            image: "images/p3.jpg", // Placeholder for p3.jpg
+          },
+          {
+            id: 4,
+            caption: "I want to make countless memories with you",
+            image: "images/p4.jpg", // Placeholder for p4.jpg
+          },
+          {
+            id: 5,
+            caption: "Ehehhh... Amr cuutiee babbuuuyyy",
+            image: "images/p5.jpg", // Placeholder for p5.jpg
+          },
+          {
+            id: 6,
+            caption: "Bad Misti... Good Pictures",
+            image: "images/p6.jpg", // Placeholder for p5.jpg
+          },
+          {
+            id: 7,
+            caption: "Ek Ghibli toh banta hai",
+            image: "images/p7.jpg", // Placeholder for p5.jpg
+          },
+          {
+            id: 8,
+            caption: "Eeee... Chotto Ruppsuuu",
+            image: "images/p8.jpg", // Placeholder for p5.jpg
+          },
+          {
+            id: 9,
+            caption: "AAAAUUUUUMMMMMMMUUUUAAHHHHHHH",
+            image: "images/p9.jpg", // Placeholder for p5.jpg
+          },
+          {
+            id: 10,
+            caption: "UFFFF... KI HOOOOOOTTTTTTT..!",
+            image: "images/p10.jpg", // Placeholder for p5.jpg
+          },
+          {
+            id: 11,
+            caption: "Angel of my life 😭❤️",
+            image: "images/p11.jpg", // Placeholder for p5.jpg
+          },
+          {
+            id: 12,
+            caption: "Dheerr... Mood kharap kar dia",
+            image: "images/p12.jpg", // Placeholder for p5.jpg
+          },
+        ];
+
+        const [revealedCards, setRevealedCards] = React.useState({});
+
+        const handleScratchComplete = (cardId) => {
+          setRevealedCards((prev) => ({ ...prev, [cardId]: true }));
+        };
+
+        return (
+          <section className="bg-white p-8 rounded-3xl shadow-xl max-w-5xl w-full text-center animate-fade-in">
+            <h2 className="text-3xl md:text-4xl font-bold text-red-600 mb-8">
+              Scratch & Reveal!
+            </h2>
+            <div className="flex flex-wrap justify-center gap-6">
+              {cardsData.map((card) => (
+                <ScratchCard
+                  key={card.id}
+                  card={card}
+                  onScratchComplete={() => handleScratchComplete(card.id)}
+                  isRevealed={revealedCards[card.id]}
+                />
+              ))}
+            </div>
+            <button
+              onClick={() => navigateTo("mainMenu")}
+              className="mt-8 px-6 py-2 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+            >
+              Back to Menu
+            </button>
+          </section>
+        );
+      };
+
+      // Individual Scratch Card Component
+      const ScratchCard = ({ card, onScratchComplete, isRevealed }) => {
+        const canvasRef = React.useRef(null);
+        const [isScratching, setIsScratching] = React.useState(false);
+        const [scratchProgress, setScratchProgress] = React.useState(0);
+
+        const drawScratchLayer = React.useCallback((ctx, width, height) => {
+          ctx.fillStyle = "#A7D9F8"; // Light blue scratch color
+          ctx.fillRect(0, 0, width, height);
+          ctx.globalCompositeOperation = "destination-out";
+          ctx.lineJoin = "round";
+          ctx.lineCap = "round";
+          ctx.lineWidth = 40; // Wider brush for easier scratching
+        }, []);
+
+        React.useEffect(() => {
+          const canvas = canvasRef.current;
+          if (!canvas || isRevealed) return;
+
+          const ctx = canvas.getContext("2d");
+          const dpr = window.devicePixelRatio || 1;
+          const rect = canvas.getBoundingClientRect();
+
+          canvas.width = rect.width * dpr;
+          canvas.height = rect.height * dpr;
+          ctx.scale(dpr, dpr);
+
+          drawScratchLayer(ctx, rect.width, rect.height);
+        }, [card.image, isRevealed, drawScratchLayer]);
+
+        const getCoordinates = (e) => {
+          const canvas = canvasRef.current;
+          const rect = canvas.getBoundingClientRect();
+          const dpr = window.devicePixelRatio || 1;
+          let x, y;
+
+          if (e.touches && e.touches.length > 0) {
+            x = ((e.touches[0].clientX - rect.left) * dpr) / dpr;
+            y = ((e.touches[0].clientY - rect.top) * dpr) / dpr;
+          } else {
+            x = ((e.clientX - rect.left) * dpr) / dpr;
+            y = ((e.clientY - rect.top) * dpr) / dpr;
+          }
+          return { x, y };
+        };
+
+        const handleMouseDown = (e) => {
+          if (isRevealed) return;
+          setIsScratching(true);
+          const { x, y } = getCoordinates(e);
+          const ctx = canvasRef.current.getContext("2d");
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+        };
+
+        const handleMouseMove = (e) => {
+          if (!isScratching || isRevealed) return;
+          const { x, y } = getCoordinates(e);
+          const ctx = canvasRef.current.getContext("2d");
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          checkScratchProgress();
+        };
+
+        const handleMouseUp = () => {
+          setIsScratching(false);
+          checkScratchProgress();
+        };
+
+        const checkScratchProgress = () => {
+          const canvas = canvasRef.current;
+          if (!canvas) return;
+          const ctx = canvas.getContext("2d");
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const pixels = imageData.data;
+          let transparentPixels = 0;
+          for (let i = 0; i < pixels.length; i += 4) {
+            if (pixels[i + 3] === 0) {
+              // Check alpha channel
+              transparentPixels++;
+            }
+          }
+          const totalPixels = pixels.length / 4;
+          const progress = (transparentPixels / totalPixels) * 100;
+          setScratchProgress(progress);
+
+          if (progress > 50 && !isRevealed) {
+            // If more than 50% scratched
+            onScratchComplete(card.id);
+            // Clear the canvas completely
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        };
+
+        return (
+          <div className="scratch-card-container">
+            <div className="scratch-card-content">
+              <img
+                src={card.image}
+                alt={`Reveal for Card ${card.id}`}
+                className="w-full h-full object-cover rounded-xl"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src =
+                    "https://placehold.co/200x200/FFC0CB/000000?text=Image+Not+Found";
+                }}
+              />
+              <p className="absolute bottom-4 left-0 right-0 text-white font-semibold text-lg bg-black bg-opacity-50 py-2 rounded-b-xl">
+                {card.caption}
+              </p>
+            </div>
+            {!isRevealed && (
+              <canvas
+                ref={canvasRef}
+                className="scratch-canvas"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp} // End scratching if mouse leaves canvas
+                onTouchStart={handleMouseDown}
+                onTouchMove={handleMouseMove}
+                onTouchEnd={handleMouseUp}
+                width="250" // Set initial width/height for canvas element
+                height="250"
+              />
+            )}
+          </div>
+        );
+      };
+
+      // PicturePuzzle Component
+      const PicturePuzzle = ({ navigateTo }) => {
+        const puzzleImage = 'images/puzzle_main.jpg';
+        const gridSize = 3;
+        const totalPieces = gridSize * gridSize;
+
+        // Helper to get shuffled but solvable puzzle
+        function getShuffledTiles() {
+          let arr = Array.from({ length: totalPieces }, (_, i) => i);
+          let isSolvable = false;
+          let isNotSolved = false;
+          while (!isSolvable || !isNotSolved) {
+            // Fisher-Yates shuffle
+            for (let i = arr.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            isSolvable = checkSolvable(arr);
+            isNotSolved = !arr.every((v, i) => v === i);
+          }
+          return arr;
+        }
+
+        // Check if a puzzle is solvable (for 3x3)
+        function checkSolvable(tiles) {
+          let invCount = 0;
+          for (let i = 0; i < tiles.length; i++) {
+            for (let j = i + 1; j < tiles.length; j++) {
+              if (tiles[i] !== totalPieces - 1 && tiles[j] !== totalPieces - 1 && tiles[i] > tiles[j]) {
+                invCount++;
+              }
+            }
+          }
+          return invCount % 2 === 0;
+        }
+
+        // State: tiles is an array of numbers, 0..7 are tile indices, 8 is the empty
+        const [tiles, setTiles] = React.useState(() => getShuffledTiles());
+        const [isSolved, setIsSolved] = React.useState(false);
+        const [autoSolving, setAutoSolving] = React.useState(false);
+
+        React.useEffect(() => {
+          setIsSolved(tiles.every((v, i) => v === i));
+        }, [tiles]);
+
+        // Move tile if adjacent to empty
+        function moveTile(idx) {
+          if (autoSolving) return;
+          const emptyIdx = tiles.indexOf(totalPieces - 1);
+          const row = Math.floor(idx / gridSize);
+          const col = idx % gridSize;
+          const emptyRow = Math.floor(emptyIdx / gridSize);
+          const emptyCol = emptyIdx % gridSize;
+          const isAdjacent = (Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1;
+          if (!isSolved && isAdjacent) {
+            const newTiles = [...tiles];
+            [newTiles[idx], newTiles[emptyIdx]] = [newTiles[emptyIdx], newTiles[idx]];
+            setTiles(newTiles);
+          }
+        }
+
+        function resetPuzzle() {
+          setTiles(getShuffledTiles());
+          setIsSolved(false);
+          setAutoSolving(false);
+        }
+
+        // --- Auto Solve Logic ---
+        // BFS to find shortest solution (for 3x3, this is fast)
+        function getNeighbors(state) {
+          const neighbors = [];
+          const emptyIdx = state.indexOf(totalPieces - 1);
+          const row = Math.floor(emptyIdx / gridSize);
+          const col = emptyIdx % gridSize;
+          const moves = [
+            [row - 1, col],
+            [row + 1, col],
+            [row, col - 1],
+            [row, col + 1],
+          ];
+          for (const [r, c] of moves) {
+            if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
+              const swapIdx = r * gridSize + c;
+              const newState = [...state];
+              [newState[emptyIdx], newState[swapIdx]] = [newState[swapIdx], newState[emptyIdx]];
+              neighbors.push({ state: newState, moveIdx: swapIdx });
+            }
+          }
+          return neighbors;
+        }
+
+        function arraysEqual(a, b) {
+          return a.length === b.length && a.every((v, i) => v === b[i]);
+        }
+
+        function solvePuzzle(startState) {
+          const goal = Array.from({ length: totalPieces }, (_, i) => i);
+          const queue = [{ state: startState, path: [] }];
+          const visited = new Set();
+          visited.add(startState.join(","));
+          while (queue.length > 0) {
+            const { state, path } = queue.shift();
+            if (arraysEqual(state, goal)) return path;
+            for (const neighbor of getNeighbors(state)) {
+              const key = neighbor.state.join(",");
+              if (!visited.has(key)) {
+                visited.add(key);
+                queue.push({ state: neighbor.state, path: [...path, neighbor.moveIdx] });
+              }
+            }
+          }
+          return null;
+        }
+
+        async function autoSolve() {
+          if (isSolved || autoSolving) return;
+          setAutoSolving(true);
+          const solution = solvePuzzle(tiles);
+          if (!solution) {
+            setAutoSolving(false);
+            return;
+          }
+          let currentTiles = [...tiles];
+          for (let i = 0; i < solution.length; i++) {
+            await new Promise((res) => setTimeout(res, 250));
+            const emptyIdx = currentTiles.indexOf(totalPieces - 1);
+            const moveIdx = solution[i];
+            [currentTiles[emptyIdx], currentTiles[moveIdx]] = [currentTiles[moveIdx], currentTiles[emptyIdx]];
+            setTiles([...currentTiles]);
+          }
+          setAutoSolving(false);
+        }
+
+        return (
+          <section className="bg-white p-8 rounded-3xl shadow-xl max-w-2xl w-full text-center animate-fade-in">
+            <h2 className="text-3xl md:text-4xl font-bold text-red-600 mb-8">Our Picture Puzzle!</h2>
+
+            {isSolved && (
+                <>
+                  <div className="text-green-600 text-3xl font-bold mb-6 animate-bounce">
+                      Puzzle Solved! You're amazing! ❤️
+                  </div>
+                  <div className="flex items-center justify-center mb-6">
+                    <img
+                      src={puzzleImage}
+                      alt="Solved Puzzle"
+                      style={{ width: 300, height: 300, borderRadius: '0.75rem', border: '4px solid #f87171', objectFit: 'cover', background: '#fbcfe8' }}
+                    />
+                  </div>
+                </>
+            )}
+
+            {!isSolved && (
+              <div
+                  className="grid gap-1 p-1 rounded-lg bg-gray-200"
+                  style={{
+                      gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+                      gridTemplateRows: `repeat(${gridSize}, 1fr)`,
+                      width: '300px',
+                      height: '300px',
+                      margin: '0 auto',
+                      border: '4px solid #f87171'
+                  }}
+              >
+                  {tiles.map((tileIdx, idx) => {
+                      if (tileIdx === totalPieces - 1) {
+                          // Empty tile
+                          return (
+                              <div
+                                  key={idx}
+                                  className="bg-gray-100 border border-gray-300 rounded-md"
+                                  style={{ width: '100px', height: '100px' }}
+                              ></div>
+                          );
+                      }
+                      const row = Math.floor(tileIdx / gridSize);
+                      const col = tileIdx % gridSize;
+                      return (
+                          <div
+                              key={idx}
+                              className={`relative flex items-center justify-center border border-gray-300 rounded-md overflow-hidden cursor-pointer select-none`}
+                              style={{
+                                  width: '100px',
+                                  height: '100px',
+                                  backgroundImage: `url(${puzzleImage})`,
+                                  backgroundSize: `${gridSize * 100}% ${gridSize * 100}%`,
+                                  backgroundPosition: `-${col * 100}px -${row * 100}px`,
+                                  transition: 'transform 0.2s ease-in-out',
+                                  boxShadow: 'inset 0 0 5px rgba(0,0,0,0.1)'
+                              }}
+                              onClick={() => moveTile(idx)}
+                          >
+                          </div>
+                      );
+                  })}
+              </div>
+            )}
+
+            <div className="flex justify-center space-x-4 mt-8">
+                <button
+                    onClick={resetPuzzle}
+                    className="px-6 py-3 bg-red-500 text-white font-bold rounded-full shadow-lg hover:bg-red-600 transition duration-300 transform hover:scale-105"
+                    disabled={autoSolving}
+                >
+                    Shuffle Again
+                </button>
+                <button
+                    onClick={autoSolve}
+                    className={`px-6 py-3 bg-green-500 text-white font-bold rounded-full shadow-lg hover:bg-green-600 transition duration-300 transform hover:scale-105 ${autoSolving ? 'opacity-60 cursor-not-allowed' : ''}`}
+                    disabled={autoSolving || isSolved}
+                >
+                    {autoSolving ? 'Solving...' : 'Auto Solve'}
+                </button>
+                <button
+                    onClick={() => navigateTo('mainMenu')}
+                    className="px-6 py-3 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+                    disabled={autoSolving}
+                >
+                    Back to Menu
+                </button>
+            </div>
+        </section>
+        );
+      };
+
+      // Main App Component
+      const App = () => {
+        const [currentView, setCurrentView] = React.useState("giftBox"); // 'giftBox', 'message', 'mainMenu', 'gallery', 'memoryJar', 'quiz', 'scratchCard'
+        const [showConfetti, setShowConfetti] = React.useState(false);
+        const appRef = React.useRef(null); // Ref for the main app container to attach click listener
+
+        // Function to trigger confetti/hearts
+        const triggerConfetti = React.useCallback((e) => {
+          const heart = document.createElement("div");
+          heart.className =
+            "absolute text-red-500 text-3xl animate-heart-fall pointer-events-none z-50";
+          heart.innerHTML = "❤️"; // Or '✨' or '🎉'
+          heart.style.left = `${e.clientX - 15}px`;
+          heart.style.top = `${e.clientY - 15}px`;
+          document.body.appendChild(heart);
+
+          heart.addEventListener("animationend", () => {
+            heart.remove();
+          });
+        }, []);
+
+        React.useEffect(() => {
+          // Add click listener to trigger confetti/hearts
+          const appElement = appRef.current;
+          if (appElement) {
+            appElement.addEventListener("click", triggerConfetti);
+          }
+          return () => {
+            if (appElement) {
+              appElement.removeEventListener("click", triggerConfetti);
+            }
+          };
+        }, [triggerConfetti]);
+
+        const navigateTo = (view) => {
+          setCurrentView(view);
+          setShowConfetti(true); // Trigger confetti when navigating
+          setTimeout(() => setShowConfetti(false), 2000); // Stop after 2 seconds
+        };
+
+        return (
+          <div
+            ref={appRef}
+            className="min-h-screen flex flex-col items-center justify-center p-4 font-inter bg-gradient-to-br from-blue-100 to-pink-100 text-gray-800 relative overflow-hidden"
+            style={{ fontFamily: "Inter, sans-serif" }}
+          >
+            {/* Heart animations on both sides */}
+            <div className="fixed left-0 top-0 h-full flex flex-col justify-center z-50 pointer-events-none">
+              <div className="relative w-24 h-full flex flex-col items-center justify-center">
+                {[...Array(8)].map((_, i) => (
+                  <span
+                    key={i}
+                    className={`block animate-heart-float side-heart-pulse mb-6`}
+                    style={{
+                      animationDelay: `${i * 0.4}s`,
+                      fontSize: `${24 + Math.random() * 24}px`,
+                      color: [
+                        "#EF4444",
+                        "#EC4899",
+                        "#F87171",
+                        "#FDA4AF",
+                        "#FBCFE8",
+                      ][i % 5],
+                      textShadow: "0 0 8px #f472b6, 0 0 16px #fbcfe8",
+                    }}
+                  >
+                    ❤️
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="fixed right-0 top-0 h-full flex flex-col justify-center z-50 pointer-events-none">
+              <div className="relative w-24 h-full flex flex-col items-center justify-center">
+                {[...Array(8)].map((_, i) => (
+                  <span
+                    key={i}
+                    className={`block animate-heart-float side-heart-pulse mb-6`}
+                    style={{
+                      animationDelay: `${i * 0.4 + 0.2}s`,
+                      fontSize: `${24 + Math.random() * 24}px`,
+                      color: [
+                        "#EF4444",
+                        "#EC4899",
+                        "#F87171",
+                        "#FDA4AF",
+                        "#FBCFE8",
+                      ][i % 5],
+                      textShadow: "0 0 8px #f472b6, 0 0 16px #fbcfe8",
+                    }}
+                  >
+                    ❤️
+                  </span>
+                ))}
+              </div>
+            </div>
+            {currentView === "giftBox" && (
+              <div className="flex flex-col items-center justify-center text-center">
+                <h1 className="mt-16 mb-16 text-4xl md:text-5xl font-bold text-red-600 animate-bounce">
+                  Happy Birthday, Ruppsuu!
+                </h1>
+                <div className="gift-box" onClick={() => navigateTo("message")}>
+                  <div className="gift-box-lid"></div>
+                  <div className="gift-box-ribbon-v"></div>
+                  <div className="gift-box-ribbon-h"></div>
+                  <div className="gift-box-bow"></div>
+                </div>
+                <p className="mt-8 text-lg text-gray-700">
+                  Click the gift box to reveal your surprise!
+                </p>
+              </div>
+            )}
+
+            {currentView === "message" && (
+              <div className="bg-white p-8 rounded-3xl shadow-xl max-w-3xl w-full text-center relative animate-fade-in">
+                <h2 className="text-3xl md:text-4xl font-bold text-pink-600 mb-6">
+                  My Dearest Ruppsuu,
+                </h2>
+                <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
+                  <b>
+                    Happy 21st Birthday to my cuuutiiee sexyyyy babbyyy Ruppsuu!
+                    <br />
+                    Amr gulumuluuu.
+                  </b>
+                </p>
+                <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
+                  You might get a little mad at me sometimes (and okay, I
+                  probably deserve it!), but I know deep down you love me the
+                  most. And honestly, I've never been loved like this by anyone.
+                  You were the first one to truly see me, to appreciate me, and
+                  even call me handsome..
+                </p>
+                <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
+                  Like ask me if I have even thought of someone as beautiful as
+                  you to like me or actually fall in love with me..! Thank you
+                  for being the person who actually wants to be with me, who
+                  inspires me to be better, even when I stumble. You're truly
+                  special, my Cuutiiiee Babbuuuyy. I love you more than you
+                  think.
+                </p>
+                <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
+                  I know I can be a bit of a mess sometimes, and I might not
+                  always be the person you want me to be. I just want to make
+                  you happy, but I mess up sometimes. I'm sorry for not being
+                  the way you want me to be. I always want to make you happy but
+                  sometimes I just mess up things.
+                </p>
+                <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-8">
+                  I really miss you. After the college was done we met almost
+                  after a month and I wanted to spend the whole time close to
+                  you with you. I should have thought about the surroundings and
+                  I'm sorry about what I did. I really miss you.
+                </p>
+                <button
+                  onClick={() => navigateTo("mainMenu")}
+                  className="px-8 py-3 bg-red-500 text-white font-bold rounded-full shadow-lg hover:bg-red-600 transition duration-300 transform hover:scale-105"
+                >
+                  Explore Your Gifts!
+                </button>
+              </div>
+            )}
+
+            {currentView === "mainMenu" && (
+              <div className="bg-white p-8 rounded-3xl shadow-xl max-w-4xl w-full text-center animate-fade-in">
+                <h2 className="text-3xl md:text-4xl font-bold text-blue-600 mb-8">
+                  Your Birthday Surprises!
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <MenuItem
+                    title="Photo Gallery"
+                    icon="📸"
+                    onClick={() => navigateTo("gallery")}
+                  />
+                  <MenuItem
+                    title="Memory Jar"
+                    icon="🍯"
+                    onClick={() => navigateTo("memoryJar")}
+                  />
+                  <MenuItem
+                    title="Love Quiz"
+                    icon="🤔"
+                    onClick={() => navigateTo("quiz")}
+                  />
+                  <MenuItem
+                    title="Scratch Cards"
+                    icon="🎁"
+                    onClick={() => navigateTo("scratchCard")}
+                  />
+                  <MenuItem
+                    title="Picture Puzzle"
+                    icon="🧩"
+                    onClick={() => navigateTo("puzzle")}
+                  />
+                </div>
+                <button
+                  onClick={() => navigateTo("message")}
+                  className="mt-8 px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-300 transition duration-300"
+                >
+                  Back to Message
+                </button>
+              </div>
+            )}
+
+            {currentView === "gallery" && (
+              <section className="bg-white p-8 rounded-3xl shadow-xl max-w-5xl w-full animate-fade-in">
+                <h2 className="text-3xl md:text-4xl font-bold text-pink-600 mb-8 text-center">
+                  Our Beautiful Memories
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {[...Array(16)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="rounded-xl overflow-hidden shadow-md transform hover:scale-105 transition duration-300"
+                    >
+                      <img
+                        src={`gallery/p${i + 1}.jpg`}
+                        alt={`Memory ${i + 1}`}
+                        className="w-full h-48 object-cover rounded-xl"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://placehold.co/400x300/ADD8E6/000000?text=Image+Not+Found";
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => navigateTo("mainMenu")}
+                  className="mt-8 px-6 py-2 bg-blue-500 text-white font-bold rounded-full shadow-lg hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+                >
+                  Back to Menu
+                </button>
+              </section>
+            )}
+
+            {currentView === "memoryJar" && (
+              <MemoryJar navigateTo={navigateTo} />
+            )}
+
+            {currentView === "quiz" && <Quiz navigateTo={navigateTo} />}
+
+
+            {currentView === "scratchCard" && (
+              <ScratchCardGame navigateTo={navigateTo} />
+            )}
+
+            {currentView === 'puzzle' && (
+              <PicturePuzzle navigateTo={navigateTo} />
+            )}
+
+            {/* Confetti/Hearts Layer */}
+            {showConfetti && <ConfettiHearts />}
+          </div>
+        );
+      };
+
+      // Render the App component into the 'root' div
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
